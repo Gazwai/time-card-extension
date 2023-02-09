@@ -1,0 +1,180 @@
+/*================================*/
+/* CSS styling for the popup menu */
+/*================================*/
+
+body {
+  width: 16rem;
+  height: 10rem;
+  background-color: rgb(255, 255, 255);
+  text-align: center;
+  user-select: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+body,
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+ul {
+  padding: 0;
+}
+a {
+  text-decoration: none;
+  display: inline-block;
+}
+.content-container {
+  width: 80vw;
+  margin: 0 auto;
+}
+.page-frame-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.page-frame-header {
+  display: flex;
+  background-color: rgb(255, 255, 255);
+  border-bottom: 2px solid rgb(245, 245, 245);
+  padding: 1rem 0;
+  height: 1rem;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-frame-header img {
+  width:20px
+}
+
+.page-frame-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  width: 16rem;
+  height: 6rem;
+  flex-grow: 1;
+  overflow: scroll;
+}
+.page-frame-body-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-frame-sign-in {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-frame-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  height: 1rem;
+  background-color: rgb(255, 255, 255);
+  border-top: 2px solid rgb(245, 245, 245);
+}
+
+.header-color-text {
+  color: #95C9B4;
+}
+
+.btn-flat {
+  color: #ffffff;
+  background: #95C9B4;
+  padding: 8px 24px;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+  border: 0;
+}
+
+.btn-flat:hover {
+  background: #008060;
+  color: #ffffff;
+  cursor: auto;
+  cursor: pointer;
+}
+
+.btn-flat:active {
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.24);
+  transform: translateY(2px);
+  transition: ease 0.2s;
+}
+
+[data-target-link='gazwai'] {
+  cursor: pointer;
+}
+
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #008060;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #008060;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}

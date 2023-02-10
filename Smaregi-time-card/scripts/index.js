@@ -12,34 +12,27 @@ window.onload = (event) => {
   document.getElementById("btn_cal_check_show_summary_mode").insertAdjacentElement('afterend', newDiv);
   // ---------------------------------------------
 
+  // Works out time remaining for the day
+  // First we get the day of the week and use it to get the div with todays time.
   const date = new Date();
-
   const today = date.getDay()
 
+  // We then get the time worked today and subtract it from the 8 hours we work a day.
   var todayHrAndMin = document
     .querySelectorAll("div.cal_day div.inner")[4]
     .innerText.match(/\d\d.\d\d/)[0].split(":");
 
+  // Time would convert 9:10 to 9.16666666
+  var startTimeInFloat = parseFloat(todayHrAndMin[0]) + parseFloat(todayHrAndMin[1] / 60);
 
 
-  // 👇️ 0.31
+
+
+  // 👇️ Get the time now and convert it to a float similar to the above
   date.toLocaleString("ja-JA", {
     timeStyle: "short",
     hour12: false,
   });
 
   const newTime = date.getHours() + date.getMinutes() / 60;
-
-  // var time = 0
-  // document
-  //   .querySelectorAll("div.daily_summary")
-  //   .forEach((e) => {
-  //   if (e.outerText == false) {
-  //     return
-  //   }
-
-  //   time += parseFloat(e.outerText)
-  // });
-
-  // console.log(time)
 };

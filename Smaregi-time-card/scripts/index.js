@@ -83,9 +83,7 @@ window.onload = (event) => {
 
     var endTimeInArray = endTimeInFloat.toFixed(2).split(".");
 
-    console.log(isNaN(endTimeInArray));
-
-    return isNaN(endTimeInArray)
+    return typeof endTimeInArray === "string"
       ? "Day Off 🚀"
       : `${endTimeInArray[0]}:${(
           parseFloat(endTimeInArray[1]) * 0.6

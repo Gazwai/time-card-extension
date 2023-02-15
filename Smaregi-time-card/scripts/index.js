@@ -1,63 +1,94 @@
-window.onload = (event) => {
-  //Works out time remaining for the week
-  var timeLeft = 0
+// Have an input for default start time
+// Have an input for weekly hours
 
-  var timeWorked = parseFloat(document.querySelector("span.data").innerText.match(/\d\d.\d\d/)[0]);
-  var timeLeft = 40 - timeWorked;
+window.onload = (event) => {
+  const today = new Date().getDay();
+
+  //Works out time remaining for the week
+  var timeLeftThisWeek = timeLeft(40);
+  var weeklyHoursDividedByDays = timeLeftThisWeek / (6 - today);
 
   // ---------------------------------------------
 
-  // Works out time remaining for the day
-  // First we get the day of the week and use it to get the div with todays time.
-  const date = new Date();
-  const today = date.getDay()
+  // We have the day of the week at the top and use it to get the div with todays time.
+  const startTimeInFloat = todayHrAndMin();
 
-  // We then get the time worked today and subtract it from the 8 hours we work a day plus a 1 hour lunch break.
-  var todayHrAndMin = document
-    .querySelectorAll("div.cal_day div.inner")[today]
-    .innerText.match(/\d\d.\d\d/)[0].split(":");
+  // Get break time in an Array and calculate the break
+  var breakDuration = 1;
 
-  // Get break time in an Array
-  var breakArray = document.querySelectorAll(".rest.text-middle")[today - 1].innerText.match(/\d\d.\d\d/g)
-  var breakDuration = 1
+  calculateBreak();
 
-  // If only start time of break then skip
-  if (breakArray.length > 1) {
-    var todayBreakStart = breakArray[0].split(":")
-    var todayBreakEnd = breakArray[1].split(":")
-    var startBreakStartInFloat =
-      parseFloat(todayBreakStart[0]) + parseFloat(todayBreakStart[1] / 60);
-    var startBreakEndInFloat =
-      parseFloat(todayBreakEnd[0]) + parseFloat(todayBreakEnd[1] / 60);
+  // Calculate the end time and put times into div
 
-    var breakDuration = parseFloat((startBreakEndInFloat - startBreakStartInFloat).toFixed(2));
-  }
-
-
-
-
-
-  // Time would convert 9:10 to 9.16666666
-  var startTimeInFloat = parseFloat(todayHrAndMin[0]) + parseFloat(todayHrAndMin[1] / 60);
-  var endTimeInFloat = 8 + breakDuration + startTimeInFloat;
-  var endTimeInArray = endTimeInFloat.toFixed(2).split(".");
-  var endTimeInString = `${endTimeInArray[0]}:${(
-    parseFloat(endTimeInArray[1]) * 0.6
-  ).toFixed()}`;
+  var endTimeInString = endTime();
 
   const newDiv = document.createElement("span");
-  newDiv.innerHTML = `残り時間: ${timeLeft}時間 : 今日の残り時間: ${endTimeInString}`;
+  newDiv.innerHTML = `Time left this week: ${timeLeftThisWeek} : Time remaining today: ${endTimeInString} / ${weeklyHoursDividedByDays}`;
   newDiv.style.margin = "1rem";
 
   document
     .getElementById("btn_cal_check_show_summary_mode")
     .insertAdjacentElement("afterend", newDiv);
 
-  // 👇️ Get the time now and convert it to a float similar to the above
-  date.toLocaleString("ja-JA", {
-    timeStyle: "short",
-    hour12: false,
-  });
+  // Helper Functions ---------------------------------------------
 
-  const newTime = date.getHours() + date.getMinutes() / 60;
+  function timeLeft(weeklyHours) {
+    const timeWorked = parseFloat(
+      document.querySelector("span.data").innerText.match(/.\d.\d\d/)[0]
+    );
+    return (weeklyHours - timeWorked).toFixed(2);
+  }
+
+  function todayHrAndMin() {
+    // We then get the time worked today and subtract it from the 8 hours we work a day plus a 1 hour lunch break.
+    let start = document
+      .querySelectorAll("div.cal_day div.inner")
+      [today]?.innerText.match(/\d\d.\d\d/)?.[0]
+      .split(":");
+
+    return start ? parseFloat(start[0]) + parseFloat(start[1] / 60) : 8;
+  }
+
+  function calculateBreak() {
+    var breakArray = document
+      .querySelectorAll(".rest.text-middle")
+      [today - 1]?.innerText.match(/\d\d.\d\d/g);
+
+    // If only start time of break then skip
+    if (breakArray && breakArray.length > 1) {
+      // If two breaks then puts the two breaks into a separate array to be iterated through
+      if (breakArray.length > 2) {
+        var breakArray = [breakArray.slice(0, 2), breakArray.slice(2)];
+      }
+
+      breakArray.forEach((time) => {
+        var todayBreakStart = time[0].split(":");
+        var todayBreakEnd = time[1].split(":");
+
+        var startBreakStartInFloat =
+          parseFloat(todayBreakStart[0]) + parseFloat(todayBreakStart[1] / 60);
+        var startBreakEndInFloat =
+          parseFloat(todayBreakEnd[0]) + parseFloat(todayBreakEnd[1] / 60);
+
+        breakDuration += parseFloat(
+          (startBreakEndInFloat - startBreakStartInFloat).toFixed(2)
+        );
+      });
+    }
+  }
+
+  function endTime() {
+    var endTimeInFloat =
+      weeklyHoursDividedByDays + breakDuration + startTimeInFloat;
+
+    var endTimeInArray = endTimeInFloat.toFixed(2).split(".");
+
+    console.log(isNaN(endTimeInArray));
+
+    return isNaN(endTimeInArray)
+      ? "Day Off 🚀"
+      : `${endTimeInArray[0]}:${(
+          parseFloat(endTimeInArray[1]) * 0.6
+        ).toFixed()}`;
+  }
 };

@@ -4,9 +4,20 @@
 window.onload = (event) => {
   const today = new Date().getDay();
 
+  const startAndEndTime = document
+  .querySelectorAll("div.cal_day div.inner")
+  [today]?.innerText.match(/\d\d.\d\d/gi)
+
   //Works out time remaining for the week
   var timeLeftThisWeek = timeLeft(40);
-  var weeklyHoursDividedByDays = timeLeftThisWeek / (6 - today);
+  var weeklyHoursDividedByDays = timeLeftThisWeek / (daysLeftThisWeek(today));
+
+  function daysLeftThisWeek(today) {
+    if (startAndEndTime.length == 2) {
+      return 5 - today;
+    }
+    return 6 - today;
+  }
 
   // ---------------------------------------------
 
@@ -16,7 +27,21 @@ window.onload = (event) => {
   // Get break time in an Array and calculate the break
   var breakDuration = 1;
 
-  calculateBreak();
+  var breakArray = document
+  .querySelectorAll(".rest.text-middle")
+  [today - 1].innerText.match(/\d\d.\d\d/g);
+
+  if (breakArray?.length > 2) {
+    var breakArray = [breakArray.slice(0, 2), breakArray.slice(2)];
+
+    breakArray.forEach((ele) => {
+      calculateBreak(ele);
+    });
+  }
+
+  if (breakArray?.length > 0) {
+    calculateBreak(breakArray)
+  }
 
   // Calculate the end time and put times into div
 
@@ -41,45 +66,33 @@ window.onload = (event) => {
 
   function todayHrAndMin() {
     // We then get the time worked today and subtract it from the 8 hours we work a day plus a 1 hour lunch break.
-    let start = document
-      .querySelectorAll("div.cal_day div.inner")
-      [today]?.innerText.match(/\d\d.\d\d/)?.[0]
+    if (startAndEndTime?.length == 2) {
+      return 8
+    }
+
+    let start = startAndEndTime?.[0]
       .split(":");
 
     return start ? parseFloat(start[0]) + parseFloat(start[1] / 60) : 8;
   }
 
-  function calculateBreak() {
-    var breakArray = document
-      .querySelectorAll(".rest.text-middle")
-      [today - 1]?.innerText.match(/\d\d.\d\d/g);
+  function calculateBreak(time) {
+    var todayBreakStart = time[0].split(":");
+    var todayBreakEnd = time[1].split(":");
 
-    // If only start time of break then skip
-    if (breakArray && breakArray.length > 1) {
-      // If two breaks then puts the two breaks into a separate array to be iterated through
-      if (breakArray.length > 2) {
-        var breakArray = [breakArray.slice(0, 2), breakArray.slice(2)];
-      }
+    var startBreakStartInFloat =
+    parseFloat(todayBreakStart[0]) + parseFloat(todayBreakStart[1] / 60);
+    var startBreakEndInFloat =
+    parseFloat(todayBreakEnd[0]) + parseFloat(todayBreakEnd[1] / 60);
 
-      breakArray.forEach((time) => {
-        var todayBreakStart = time[0].split(":");
-        var todayBreakEnd = time[1].split(":");
-
-        var startBreakStartInFloat =
-          parseFloat(todayBreakStart[0]) + parseFloat(todayBreakStart[1] / 60);
-        var startBreakEndInFloat =
-          parseFloat(todayBreakEnd[0]) + parseFloat(todayBreakEnd[1] / 60);
-
-        breakDuration += parseFloat(
-          (startBreakEndInFloat - startBreakStartInFloat).toFixed(2)
-        );
-      });
-    }
+    breakDuration += parseFloat(
+      (startBreakEndInFloat - startBreakStartInFloat).toFixed(2)
+    );
   }
 
   function endTime() {
     var endTimeInFloat =
-      weeklyHoursDividedByDays + breakDuration + startTimeInFloat;
+    weeklyHoursDividedByDays + breakDuration + startTimeInFloat;
 
     var endTimeInArray = endTimeInFloat.toFixed(2).split(".");
 

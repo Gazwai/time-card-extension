@@ -38,33 +38,31 @@ a {
 
 .page-frame-header {
   display: flex;
-  background-color: rgb(255, 255, 255);
+  background-color: #95c9b4;
   border-bottom: 2px solid rgb(245, 245, 245);
   padding: 1rem 0;
   height: 1rem;
   gap: 1rem;
   justify-content: center;
   align-items: center;
+  color: white;
 }
 
 .page-frame-header img {
-  width:20px
+  width: 20px;
 }
 
-.page-frame-body {
+form {
   display: flex;
   flex-direction: column;
+  width: 10rem;
   align-items: center;
-  justify-content: space-around;
-  width: 16rem;
-  height: 6rem;
-  flex-grow: 1;
-  overflow: scroll;
+  margin: 1rem auto;
 }
-.page-frame-body-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+
+form input {
+  margin-bottom: 1rem;
+  margin-left: 0.5rem;
 }
 
 .page-frame-sign-in {
@@ -86,95 +84,31 @@ a {
 }
 
 .header-color-text {
-  color: #95C9B4;
+  color: #95c9b4;
 }
 
-.btn-flat {
-  color: #ffffff;
-  background: #95C9B4;
-  padding: 8px 24px;
+form button {
+  background-color: #95c9b4;
+  border: none;
   border-radius: 4px;
-  transition: background 0.3s ease;
-  border: 0;
+  width: 4rem;
+  color: white;
+  height: 1.5rem;
+  transition-duration: 0.2s;
 }
 
-.btn-flat:hover {
-  background: #008060;
-  color: #ffffff;
-  cursor: auto;
+form button:hover {
+  transform: scale(1.1);
+  transition-duration: 0.2s;
   cursor: pointer;
 }
 
-.btn-flat:active {
-  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.24);
-  transform: translateY(2px);
-  transition: ease 0.2s;
+.page-frame-footer a {
+  transition-duration: 0.2s;
 }
 
-[data-target-link='gazwai'] {
+.page-frame-footer a:hover {
   cursor: pointer;
-}
-
-
-/* The switch - the box around the slider */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
-
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* The slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-input:checked + .slider {
-  background-color: #008060;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #008060;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
-
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
+  transform: scale(1.5);
+  transition-duration: 0.2s;
 }

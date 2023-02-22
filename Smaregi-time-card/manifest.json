@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Smaregi time-tracker",
-  "description": "Smaregi time-tracker",
+  "name": "What time is it Mr.Wolf?",
+  "description": "What time is it Mr.Wolf?",
   "author": "Gazwai",
   "version": "0.1",
   "permissions": [
@@ -22,7 +22,7 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Smaregi time-tracker"
+    "default_title": "What time is it Mr.Wolf?"
   },
   "icons": {
     "16": "images/chirpy16.png",

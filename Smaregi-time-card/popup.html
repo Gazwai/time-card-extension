@@ -3,31 +3,48 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Darkify Extension</title>
+    <title>What time is it Mr.Wolf?</title>
     <link rel="stylesheet" href="style/popup.css" />
   </head>
   <body>
     <div class="page-frame-content">
       <div class="page-frame-header">
-        <img src="images/shopify_glyph.svg" alt="" />
-        <h3>Darkify <strong class="header-color-text">for Shopify Partners</strong></h3>
+        <img src="images/clock.svg" alt="" />
+        <h3>What time is it Mr.Wolf?</h3>
       </div>
 
       <div class="page-frame-body-container">
-        <div class="page-frame-body">
-          <h3>Darkify your content</h3>
-
-          <label class="switch">
-            <input type="checkbox" data-target-darkify='toggleDarkify'>
-            <span class="slider round"></span>
-          </label>
-
-        </div>
+        <form>
+          <label for="hours"
+            >Hours a week:
+            <input
+              type="number"
+              id="hours"
+              name="hours"
+              min="30"
+              max="50"
+              step="5"
+              value="40"
+          /></label>
+          <label for="start-time"
+            >Normal start time:
+            <input
+              type="number"
+              id="start-time"
+              name="start-time"
+              min="6"
+              max="11"
+              value="8"
+          /></label>
+          <button>Save</button>
+        </form>
       </div>
 
       <div class="page-frame-footer">
         <h3>Made by</h3>
-        <a href="https://github.com/Gazwai" target="_blank"><img src="images/github.svg" alt="" /></a>
+        <a href="https://github.com/Gazwai" target="_blank"
+          ><img src="images/github.svg" alt=""
+        /></a>
         <h3 class="header-color-text">Gazwai</h3>
       </div>
     </div>

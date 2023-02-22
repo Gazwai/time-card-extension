@@ -13,7 +13,7 @@ window.onload = (event) => {
   var weeklyHoursDividedByDays = timeLeftThisWeek / (daysLeftThisWeek(today));
 
   function daysLeftThisWeek(today) {
-    if (startAndEndTime.length == 2) {
+    if (startAndEndTime?.length == 2) {
       return 5 - today;
     }
     return 6 - today;
@@ -29,9 +29,9 @@ window.onload = (event) => {
 
   var breakArray = document
   .querySelectorAll(".rest.text-middle")
-  [today - 1].innerText.match(/\d\d.\d\d/g);
+  [today - 1]?.innerText.match(/\d\d.\d\d/g);
 
-  if (breakArray?.length > 2) {
+  if (breakArray != null && breakArray.length > 2) {
     var breakArray = [breakArray.slice(0, 2), breakArray.slice(2)];
 
     breakArray.forEach((ele) => {
@@ -39,16 +39,12 @@ window.onload = (event) => {
     });
   }
 
-  if (breakArray?.length > 0) {
-    calculateBreak(breakArray)
-  }
-
   // Calculate the end time and put times into div
 
   var endTimeInString = endTime();
 
   const newDiv = document.createElement("span");
-  newDiv.innerHTML = `Time left this week: ${timeLeftThisWeek} : Time remaining today: ${endTimeInString} / ${weeklyHoursDividedByDays}`;
+  newDiv.innerHTML = `Hours left: ${timeLeftThisWeek}/${weeklyHoursDividedByDays.toFixed(2)} : Ending Time: ${endTimeInString}pm`;
   newDiv.style.margin = "1rem";
 
   document
@@ -78,10 +74,10 @@ window.onload = (event) => {
 
   function calculateBreak(time) {
     var todayBreakStart = time[0].split(":");
-    var todayBreakEnd = time[1].split(":");
-
     var startBreakStartInFloat =
     parseFloat(todayBreakStart[0]) + parseFloat(todayBreakStart[1] / 60);
+
+    var todayBreakEnd = time[1].split(":");
     var startBreakEndInFloat =
     parseFloat(todayBreakEnd[0]) + parseFloat(todayBreakEnd[1] / 60);
 
@@ -98,8 +94,15 @@ window.onload = (event) => {
 
     return typeof endTimeInArray === "string"
       ? "Day Off 🚀"
-      : `${endTimeInArray[0]}:${(
-          parseFloat(endTimeInArray[1]) * 0.6
-        ).toFixed()}`;
+      : `${endTimeInArray[0]}:${singleDigits(Math.round(
+          endTimeInArray[1] * 0.6)
+        )}`;
+  }
+
+  function singleDigits(params) {
+    if (params < 10) {
+      return "0" + params;
+    }
+    return params;
   }
 };

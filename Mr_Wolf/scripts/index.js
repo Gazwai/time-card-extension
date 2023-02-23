@@ -1,19 +1,19 @@
-window.onload = (event) => {
-  elem.addEventListener("click", (event) => {
-    event.preventDefault();
-    setEmail_Apitoken();
-    authFunction();
-    sendAuth_userMsg_background();
-  });
+window.onload = () => {
+  run();
+};
 
+function run() {
   const today = new Date().getDay();
+
+  let weeklyHours = parseInt(window.localStorage.getItem("hours")) || 40;
+  let defaultStart = parseInt(window.localStorage.getItem("start")) || 8;
 
   const startAndEndTime = document
     .querySelectorAll("div.cal_day div.inner")
     [today]?.innerText.match(/\d\d.\d\d/gi);
 
   //Works out time remaining for the week
-  var timeLeftThisWeek = timeLeft(40);
+  var timeLeftThisWeek = timeLeft(weeklyHours);
   var weeklyHoursDividedByDays = timeLeftThisWeek / daysLeftThisWeek(today);
 
   function daysLeftThisWeek(today) {
@@ -23,7 +23,7 @@ window.onload = (event) => {
     return 6 - today;
   }
 
-  // ---------------------------------------------
+  // ---------------------------------------------------------------------------
 
   // We have the day of the week at the top and use it to get the div with todays time.
   const startTimeInFloat = todayHrAndMin();
@@ -47,17 +47,26 @@ window.onload = (event) => {
 
   var endTimeInString = endTime();
 
-  const newDiv = document.createElement("span");
-  newDiv.innerHTML = `Hours left: ${timeLeftThisWeek}/${weeklyHoursDividedByDays.toFixed(
-    2
-  )} : Ending Time: ${endTimeInString}pm`;
-  newDiv.style.margin = "1rem";
+  if (document.getElementById("mr-worlf-summary")) {
+    document.getElementById(
+      "mr-worlf-summary"
+    ).innerHTML = `Hours left: ${timeLeftThisWeek}/${weeklyHoursDividedByDays.toFixed(
+      2
+    )} : Ending Time: ${endTimeInString}pm`;
+  } else {
+    const newDiv = document.createElement("span");
+    newDiv.innerHTML = `Hours left: ${timeLeftThisWeek}/${weeklyHoursDividedByDays.toFixed(
+      2
+    )} : Ending Time: ${endTimeInString}pm`;
+    newDiv.style.margin = "1rem";
+    newDiv.setAttribute("id", "mr-worlf-summary");
 
-  document
-    .getElementById("btn_cal_check_show_summary_mode")
-    .insertAdjacentElement("afterend", newDiv);
+    document
+      .getElementById("btn_cal_check_show_summary_mode")
+      .insertAdjacentElement("afterend", newDiv);
+  }
 
-  // Helper Functions ---------------------------------------------
+  // Helper Functions ----------------------------------------------------------
 
   function timeLeft(weeklyHours) {
     const timeWorked = parseFloat(
@@ -67,14 +76,19 @@ window.onload = (event) => {
   }
 
   function todayHrAndMin() {
-    // We then get the time worked today and subtract it from the 8 hours we work a day plus a 1 hour lunch break.
+    // If the day is over we return the default start time for the next morning
     if (startAndEndTime?.length == 2) {
-      return 8;
+      return defaultStart;
     }
 
+    // We then get the time worked today and subtract it from the 8 hours we work a day plus a 1 hour lunch break.
     let start = startAndEndTime?.[0].split(":");
 
-    return start ? parseFloat(start[0]) + parseFloat(start[1] / 60) : 8;
+    console.log(start);
+
+    return start
+      ? parseFloat(start[0]) + parseFloat(start[1] / 60)
+      : defaultStart;
   }
 
   function calculateBreak(time) {
@@ -110,33 +124,34 @@ window.onload = (event) => {
     }
     return params;
   }
+}
 
-  // ---------------------------------------------
+// -----------------------------------------------------------------------------
 
-  // function to get user input and save it in local storage
-  function setDefaultValues() {
-    window.localStorage.setItem(
-      "hours",
-      document.getElementById("form_email").value
-    );
-    window.localStorage.setItem(
-      "start-time",
-      document.getElementById("form_api_token").value
-    );
-    document.getElementById("hours").value = "";
-    document.getElementById("start-time").value = "";
-  }
-
-  // Wrote a function to send stored email & api token to the service worker(listens to browser action)
-  function sendAuth_userMsg_background() {
-    let pop_u = window.localStorage.getItem("user");
-    let pop_t = window.localStorage.getItem("api_token");
-    let pop_c = window.localStorage.getItem("child_user");
+// Checks if the user is on smaregi timecard and sends a message to background.js to run sendDefaultValues()
+const check_url = setInterval(function () {
+  if (window.location.href.includes("timecard1.smaregi.jp/staffs/dashboard")) {
     chrome.runtime.sendMessage({
-      name: pop_u,
-      token: pop_t,
-      child: pop_c,
-      action: "pop_auth",
+      action: "on_smaregi",
     });
   }
-};
+}, 1000);
+
+check_url;
+
+// Gets the credentials from service worker(background.js) and saves them in session storage
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.action === "back_default_values") {
+    let back_hours = request.hours;
+    let back_start = request.start;
+
+    if (
+      back_hours != window.localStorage.getItem("hours", back_hours) ||
+      back_start != window.localStorage.getItem("start", back_start)
+    ) {
+      window.localStorage.setItem("hours", back_hours);
+      window.localStorage.setItem("start", back_start);
+      run();
+    }
+  }
+});

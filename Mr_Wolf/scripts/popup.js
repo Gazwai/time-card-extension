@@ -1,44 +1,30 @@
-// Send a message to the active tab to 'toggleDarkify'
-function sendtoggleDarkifyMsg() {
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    // Finds tabs that are active in the current window
-    chrome.tabs.sendMessage(tabs[0].id, { action: "toggleDarkify" }); // Sends a message (object) to the first tab (tabs[0])
+window.onload = () => {
+  const hours = document.querySelector("#hours");
+  const start = document.querySelector("#start-time");
+
+  hours.value = window.localStorage.getItem("hours") || 40;
+  start.value = window.localStorage.getItem("start") || 8;
+
+  document.querySelector("#submit").addEventListener("click", (event) => {
+    event.preventDefault();
+    setDefaultValues();
+    sendValuesToBackground();
   });
-}
 
-// Trigger the function above when clicking the 'toggleDarkify' button
-document
-  .querySelector("[data-target-darkify='toggleDarkify']")
-  .addEventListener("change", () => sendtoggleDarkifyMsg());
+  // function to get user input and save it in local storage
+  function setDefaultValues() {
+    window.localStorage.setItem("hours", hours.value);
+    window.localStorage.setItem("start", start.value);
+  }
 
-window.onload = (event) => {
-  chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
-    if (!tabs[0].url.includes("myshopify.com")) {
-      document.querySelector(
-        "[data-target-darkify='toggleDarkify']"
-      ).disabled = true;
-
-      return;
-    }
-
-    onloadDarkifyStatusMsg();
-  });
-};
-
-function onloadDarkifyStatusMsg() {
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    // Finds tabs that are active in the current window
-    const response = chrome.tabs.sendMessage(tabs[0].id, {
-      action: "onloadDarkifyStatus",
-    }); // Sends a message (object) to the first tab (tabs[0])
-
-    response.then((res) => {
-      window.localStorage.setItem("darkify_status", res.darkify_status);
-      if (res.darkify_status == "on") {
-        document.querySelector(
-          "[data-target-darkify='toggleDarkify']"
-        ).checked = true;
-      }
+  // Wrote a function to send stored default values to the service worker(listens to browser action)
+  function sendValuesToBackground() {
+    let hour = window.localStorage.getItem("hours");
+    let start = window.localStorage.getItem("start");
+    chrome.runtime.sendMessage({
+      hours: hour,
+      start: start,
+      action: "default_values",
     });
-  });
-}
+  }
+};

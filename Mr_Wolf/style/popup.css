@@ -45,7 +45,7 @@ a {
   gap: 1rem;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: #FFFFFF;
 }
 
 .page-frame-header img {
@@ -87,19 +87,29 @@ form input {
   color: #95c9b4;
 }
 
-form button {
-  background-color: #95c9b4;
-  border: none;
-  border-radius: 4px;
+#submit {
   width: 4rem;
-  color: white;
+  margin-bottom: 0;
   height: 1.5rem;
+  color: #FFFFFF;
+  border: none;
+  background-color: #95c9b4;
+  border-radius: 4px;
   transition-duration: 0.2s;
 }
 
-form button:hover {
+#submit:hover {
   transform: scale(1.1);
   transition-duration: 0.2s;
+  cursor: pointer;
+}
+
+#submit:active {
+  background-color: #56a987;
+}
+
+form button:active {
+  transform: scale(1.1);
   cursor: pointer;
 }
 

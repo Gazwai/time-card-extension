@@ -103,12 +103,6 @@ form button:hover {
   cursor: pointer;
 }
 
-.page-frame-footer a {
-  transition-duration: 0.2s;
-}
-
 .page-frame-footer a:hover {
   cursor: pointer;
-  transform: scale(1.5);
-  transition-duration: 0.2s;
 }

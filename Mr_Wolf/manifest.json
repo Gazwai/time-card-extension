@@ -5,7 +5,6 @@
   "author": "Gazwai",
   "version": "0.1",
   "permissions": [
-    "activeTab",
     "storage"
   ],
   "host_permissions": [

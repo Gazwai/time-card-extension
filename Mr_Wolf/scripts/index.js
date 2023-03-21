@@ -3,49 +3,88 @@ window.onload = () => {
 };
 
 function run() {
-  const today = new Date().getDay();
-
-  let weeklyHours = parseInt(window.localStorage.getItem("hours")) || 40;
-  let defaultStart = parseInt(window.localStorage.getItem("start")) || 8;
-
-  const startAndEndTime = document
-    .querySelectorAll("div.cal_day div.inner")
-    [today]?.innerText.match(/\d\d.\d\d/gi);
-
-  //Works out time remaining for the week
-  var timeLeftThisWeek = timeLeft(weeklyHours);
-  var weeklyHoursDividedByDays = timeLeftThisWeek / daysLeftThisWeek(today);
-
-  function daysLeftThisWeek(today) {
-    if (startAndEndTime?.length == 2) {
-      return 5 - today;
-    }
-    return 6 - today;
+  if (document.querySelector(".week.cf.show_shift") == undefined) {
+    return console.log("Change to shift view");
   }
 
-  // ---------------------------------------------------------------------------
+  const today = new Date().getDay();
+  console.log("🚀 ~ file: index.js:7 ~ run ~ today:", today);
+
+  const weeklyHours = parseInt(window.localStorage.getItem("hours")) || 40;
+  console.log("🚀 ~ file: index.js:10 ~ run ~ weeklyHours:", weeklyHours);
+  const defaultStart = parseInt(window.localStorage.getItem("start")) || 8;
+  console.log("🚀 ~ file: index.js:12 ~ run ~ defaultStart:", defaultStart);
+
+  if (document.querySelectorAll("div.cal_day div.inner")[today]) {
+    console.log("Found time");
+    var startAndEndTime = document
+      .querySelectorAll("div.cal_day div.inner")
+      [today].innerText.match(/\d\d.\d\d/gi);
+    console.log(
+      "🚀 ~ file: index.js:24 ~ run ~ startAndEndTime:",
+      startAndEndTime
+    );
+  } else {
+    console.log("No time found");
+  }
+  //Works out time remaining for the week
+  const timeLeftThisWeek = timeLeft(weeklyHours);
+  console.log(
+    "🚀 ~ file: index.js:27 ~ run ~ timeLeftThisWeek:",
+    timeLeftThisWeek
+  );
+  const weeklyHoursDividedByDays =
+    timeLeftThisWeek / daysLeftThisWeek(today, startAndEndTime);
+  console.log(
+    "🚀 ~ file: index.js:29 ~ run ~ weeklyHoursDividedByDays:",
+    weeklyHoursDividedByDays
+  );
 
   // We have the day of the week at the top and use it to get the div with todays time.
-  const startTimeInFloat = todayHrAndMin();
+  const startTimeInFloat = todayHrAndMin(startAndEndTime);
+  console.log(
+    "🚀 ~ file: index.js:34 ~ run ~ startTimeInFloat:",
+    startTimeInFloat
+  );
+
+  // ---------------------------------------------------------------------------
 
   // Get break time in an Array and calculate the break
   var breakDuration = 1;
 
-  var breakArray = document
-    .querySelectorAll(".rest.text-middle")
-    [today - 1]?.innerText.match(/\d\d.\d\d/g);
+  if (document.querySelectorAll(".rest.text-middle")[today - 1]) {
+    var breakArray = document
+      .querySelectorAll(".rest.text-middle")
+      [today - 1].innerText.match(/\d\d.\d\d/g);
+
+    console.log("🚀 ~ file: index.js:52 ~ run ~ breakArray:", breakArray);
+  } else {
+    console.log("No break found");
+  }
 
   if (breakArray != null && breakArray.length > 2) {
     var breakArray = [breakArray.slice(0, 2), breakArray.slice(2)];
+    console.log("🚀 ~ file: index.js:54 ~ run ~ breakArray:", breakArray);
 
     breakArray.forEach((ele) => {
       calculateBreak(ele);
     });
+
+    console.log("breakDureation", breakDuration);
   }
 
   // Calculate the end time and put times into div
 
-  var endTimeInString = endTime();
+  var endTimeInString = endTime(
+    weeklyHoursDividedByDays,
+    breakDuration,
+    startTimeInFloat
+  );
+
+  console.log(
+    "🚀 ~ file: index.js:81 ~ run ~ endTimeInString:",
+    endTimeInString
+  );
 
   if (document.getElementById("mr-worlf-summary")) {
     document.getElementById(
@@ -68,6 +107,18 @@ function run() {
 
   // Helper Functions ----------------------------------------------------------
 
+  function daysLeftThisWeek(today, startAndEndTime) {
+    if (startAndEndTime == undefined) {
+      return console.log("No time found");
+    }
+
+    if (startAndEndTime.length == 2) {
+      return 5 - today;
+    }
+
+    return 6 - today;
+  }
+
   function timeLeft(weeklyHours) {
     const timeWorked = parseFloat(
       document.querySelector("span.data").innerText.match(/.\d.\d\d/)[0]
@@ -75,16 +126,19 @@ function run() {
     return (weeklyHours - timeWorked).toFixed(2);
   }
 
-  function todayHrAndMin() {
+  function todayHrAndMin(startAndEndTime) {
     // If the day is over we return the default start time for the next morning
-    if (startAndEndTime?.length == 2) {
+
+    if (startAndEndTime == undefined) {
+      return console.log("No time found");
+    }
+
+    if (startAndEndTime.length == 2) {
       return defaultStart;
     }
 
     // We then get the time worked today and subtract it from the 8 hours we work a day plus a 1 hour lunch break.
-    let start = startAndEndTime?.[0].split(":");
-
-    console.log(start);
+    let start = startAndEndTime[0].split(":");
 
     return start
       ? parseFloat(start[0]) + parseFloat(start[1] / 60)
@@ -105,7 +159,7 @@ function run() {
     );
   }
 
-  function endTime() {
+  function endTime(weeklyHoursDividedByDays, breakDuration, startTimeInFloat) {
     var endTimeInFloat =
       weeklyHoursDividedByDays + breakDuration + startTimeInFloat;
 

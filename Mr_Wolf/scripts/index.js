@@ -8,51 +8,28 @@ function run() {
   }
 
   const today = new Date().getDay();
-  console.log("🚀 ~ file: index.js:7 ~ run ~ today:", today);
-
   const weeklyHours = parseInt(window.localStorage.getItem("hours")) || 40;
-  console.log("🚀 ~ file: index.js:10 ~ run ~ weeklyHours:", weeklyHours);
   const defaultStart = parseInt(window.localStorage.getItem("start")) || 8;
-  console.log("🚀 ~ file: index.js:12 ~ run ~ defaultStart:", defaultStart);
 
   if (document.querySelectorAll("div.cal_day div.inner")[today]) {
-    console.log("Found time");
     var startAndEndTime = document
       .querySelectorAll("div.cal_day div.inner")
       [today].innerText.match(/\d\d.\d\d/gi);
-    console.log(
-      "🚀 ~ file: index.js:24 ~ run ~ startAndEndTime:",
-      startAndEndTime
-    );
   } else {
     console.log("No time found");
   }
   //Works out time remaining for the week
   const timeLeftThisWeek = timeLeft(weeklyHours);
-  console.log(
-    "🚀 ~ file: index.js:27 ~ run ~ timeLeftThisWeek:",
-    timeLeftThisWeek
-  );
 
-  if (timeLeftThisWeek < 0 && daysLeftThisWeek(today, startAndEndTime == 0)) {
+  var weeklyHoursDividedByDays =
+    timeLeftThisWeek / daysLeftThisWeek(today, startAndEndTime);
+
+  if (weeklyHoursDividedByDays == Infinity || -Infinity) {
     var weeklyHoursDividedByDays = 0;
-  } else {
-    var weeklyHoursDividedByDays =
-      timeLeftThisWeek / daysLeftThisWeek(today, startAndEndTime);
   }
-
-  console.log("daysLeftThisWeek", daysLeftThisWeek(today, startAndEndTime));
-  console.log(
-    "🚀 ~ file: index.js:29 ~ run ~ weeklyHoursDividedByDays:",
-    weeklyHoursDividedByDays
-  );
 
   // We have the day of the week at the top and use it to get the div with todays time.
   const startTimeInFloat = todayHrAndMin(startAndEndTime);
-  console.log(
-    "🚀 ~ file: index.js:34 ~ run ~ startTimeInFloat:",
-    startTimeInFloat
-  );
 
   // ---------------------------------------------------------------------------
 
@@ -63,15 +40,12 @@ function run() {
     var breakArray = document
       .querySelectorAll(".rest.text-middle")
       [today - 1].innerText.match(/\d\d.\d\d/g);
-
-    console.log("🚀 ~ file: index.js:52 ~ run ~ breakArray:", breakArray);
   } else {
     console.log("No break found");
   }
 
   if (breakArray != null && breakArray.length > 2) {
     var breakArray = [breakArray.slice(0, 2), breakArray.slice(2)];
-    console.log("🚀 ~ file: index.js:54 ~ run ~ breakArray:", breakArray);
 
     breakArray.forEach((ele) => {
       calculateBreak(ele);
@@ -86,11 +60,6 @@ function run() {
     weeklyHoursDividedByDays,
     breakDuration,
     startTimeInFloat
-  );
-
-  console.log(
-    "🚀 ~ file: index.js:81 ~ run ~ endTimeInString:",
-    endTimeInString
   );
 
   if (document.getElementById("mr-worlf-summary")) {
@@ -167,8 +136,8 @@ function run() {
   }
 
   function endTime(weeklyHoursDividedByDays, breakDuration, startTimeInFloat) {
-    if (weeklyHoursDividedByDays == 0) {
-      return "Have a Nice Weekend 🚀"
+    if (weeklyHoursDividedByDays <= 0) {
+      return "Have a Nice Weekend 🚀";
     }
 
     var endTimeInFloat =

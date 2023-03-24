@@ -33,8 +33,15 @@ function run() {
     "🚀 ~ file: index.js:27 ~ run ~ timeLeftThisWeek:",
     timeLeftThisWeek
   );
-  const weeklyHoursDividedByDays =
-    timeLeftThisWeek / daysLeftThisWeek(today, startAndEndTime);
+
+  if (timeLeftThisWeek < 0 && daysLeftThisWeek(today, startAndEndTime == 0)) {
+    var weeklyHoursDividedByDays = 0;
+  } else {
+    var weeklyHoursDividedByDays =
+      timeLeftThisWeek / daysLeftThisWeek(today, startAndEndTime);
+  }
+
+  console.log("daysLeftThisWeek", daysLeftThisWeek(today, startAndEndTime));
   console.log(
     "🚀 ~ file: index.js:29 ~ run ~ weeklyHoursDividedByDays:",
     weeklyHoursDividedByDays
@@ -91,12 +98,12 @@ function run() {
       "mr-worlf-summary"
     ).innerHTML = `Hours left: ${timeLeftThisWeek}/${weeklyHoursDividedByDays.toFixed(
       2
-    )} : Ending Time: ${endTimeInString}pm`;
+    )} : ${endTimeInString}`;
   } else {
     const newDiv = document.createElement("span");
     newDiv.innerHTML = `Hours left: ${timeLeftThisWeek}/${weeklyHoursDividedByDays.toFixed(
       2
-    )} : Ending Time: ${endTimeInString}pm`;
+    )} : ${endTimeInString}`;
     newDiv.style.margin = "1rem";
     newDiv.setAttribute("id", "mr-worlf-summary");
 
@@ -160,6 +167,10 @@ function run() {
   }
 
   function endTime(weeklyHoursDividedByDays, breakDuration, startTimeInFloat) {
+    if (weeklyHoursDividedByDays == 0) {
+      return "Have a Nice Weekend 🚀"
+    }
+
     var endTimeInFloat =
       weeklyHoursDividedByDays + breakDuration + startTimeInFloat;
 
@@ -167,7 +178,7 @@ function run() {
 
     return typeof endTimeInArray === "string"
       ? "Day Off 🚀"
-      : `${endTimeInArray[0]}:${singleDigits(
+      : `Ending Time: ${endTimeInArray[0]}:${singleDigits(
           Math.round(endTimeInArray[1] * 0.6)
         )}`;
   }

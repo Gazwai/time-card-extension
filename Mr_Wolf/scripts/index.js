@@ -24,7 +24,7 @@ function run() {
   var weeklyHoursDividedByDays =
   timeLeftThisWeek / daysLeftThisWeek(today, startAndEndTime);
 
-  // At the start of the weeke the t
+  // At the start of the week the time is 0
   if (weeklyHoursDividedByDays == Infinity) {
     var weeklyHoursDividedByDays = weeklyHours / 5;
   }

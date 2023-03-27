@@ -8,23 +8,24 @@ function run() {
   }
 
   const today = new Date().getDay();
+
   const weeklyHours = parseInt(window.localStorage.getItem("hours")) || 40;
   const defaultStart = parseInt(window.localStorage.getItem("start")) || 8;
 
-  if (document.querySelectorAll("div.cal_day div.inner")[today]) {
-    var startAndEndTime = document
-      .querySelectorAll("div.cal_day div.inner")
-      [today].innerText.match(/\d\d.\d\d/gi);
-  } else {
-    console.log("No time found");
-  }
-  //Works out time remaining for the week
+  // returns an array of start and end time. (2) ["09:27", "17:52"]. If empty returns undefined.
+  const startAndEndTime = document
+    .querySelectorAll("div.cal_day div.inner")
+    [today]?.innerText.match(/\d\d.\d\d/gi)
+
+
   const timeLeftThisWeek = timeLeft(weeklyHours);
 
-  var weeklyHoursDividedByDays =
-  timeLeftThisWeek / daysLeftThisWeek(today, startAndEndTime);
+  // If the day is over we return the default start time for the next morning.
+  const daysLeftThisWeek = startAndEndTime?.length >= 2 ? 5 - today : 6 - today;
 
-  // At the start of the week the time is 0
+  var weeklyHoursDividedByDays = timeLeftThisWeek / daysLeftThisWeek;
+
+  // At the start of the week the time is 0 so 40 /0 = infinity. This fixes that.
   if (weeklyHoursDividedByDays == Infinity) {
     var weeklyHoursDividedByDays = weeklyHours / 5;
   }
@@ -41,13 +42,9 @@ function run() {
   // Get break time in an Array and calculate the break
   var breakDuration = 1;
 
-  if (document.querySelectorAll(".rest.text-middle")[today - 1]) {
-    var breakArray = document
-      .querySelectorAll(".rest.text-middle")
-      [today - 1].innerText.match(/\d\d.\d\d/g);
-  } else {
-    console.log("No break found");
-  }
+  var breakArray = document
+    .querySelectorAll(".rest.text-middle")
+    [today - 1]?.innerText.match(/\d\d.\d\d/g)
 
   if (breakArray != null && breakArray.length > 2) {
     var breakArray = [breakArray.slice(0, 2), breakArray.slice(2)];
@@ -88,18 +85,7 @@ function run() {
 
   // Helper Functions ----------------------------------------------------------
 
-  function daysLeftThisWeek(today, startAndEndTime) {
-    if (startAndEndTime == undefined) {
-      return console.log("No time found");
-    }
-
-    if (startAndEndTime.length == 2) {
-      return 5 - today;
-    }
-
-    return 6 - today;
-  }
-
+  //Works out time remaining for the week. Returns a float
   function timeLeft(weeklyHours) {
     const timeWorked = parseFloat(
       document.querySelector("span.data").innerText.match(/.\d.\d\d/)[0]
@@ -110,11 +96,10 @@ function run() {
   function todayHrAndMin(startAndEndTime) {
     // If the day is over we return the default start time for the next morning
 
-    if (startAndEndTime == undefined) {
-      return console.log("No time found");
-    }
-
-    if (startAndEndTime.length == 2) {
+    if (startAndEndTime == undefined || startAndEndTime?.length >= 2) {
+      console.log(
+        "todayHrAndMin fn: No time found or present day over. Returning default start time"
+      );
       return defaultStart;
     }
 
@@ -149,6 +134,7 @@ function run() {
       weeklyHoursDividedByDays + breakDuration + startTimeInFloat;
 
     var endTimeInArray = endTimeInFloat.toFixed(2).split(".");
+    console.log("🚀 ~ file: index.js:137 ~ endTime ~ endTimeInArray:", endTimeInArray)
 
     return typeof endTimeInArray === "string"
       ? "Day Off 🚀"

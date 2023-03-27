@@ -22,9 +22,14 @@ function run() {
   const timeLeftThisWeek = timeLeft(weeklyHours);
 
   var weeklyHoursDividedByDays =
-    timeLeftThisWeek / daysLeftThisWeek(today, startAndEndTime);
+  timeLeftThisWeek / daysLeftThisWeek(today, startAndEndTime);
 
-  if (weeklyHoursDividedByDays == Infinity || -Infinity) {
+  // At the start of the weeke the t
+  if (weeklyHoursDividedByDays == Infinity) {
+    var weeklyHoursDividedByDays = weeklyHours / 5;
+  }
+
+  if (weeklyHoursDividedByDays == -Infinity || NaN) {
     var weeklyHoursDividedByDays = 0;
   }
 

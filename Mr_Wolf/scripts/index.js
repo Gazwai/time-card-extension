@@ -1,3 +1,6 @@
+// uncomment the following line to use Jest testing
+// import { chrome } from "jest-chrome";
+
 window.onload = () => {
   run();
 };
@@ -15,10 +18,13 @@ function run() {
   // returns an array of start and end time. (2) ["09:27", "17:52"]. If empty returns undefined.
   const startAndEndTime = document
     .querySelectorAll("div.cal_day div.inner")
-    [today]?.innerText.match(/\d\d.\d\d/gi)
+    [today]?.innerText.match(/\d\d.\d\d/gi);
 
+  const timeWorked = parseFloat(
+    document.querySelector("span.data").innerText.match(/.\d.\d\d/)[0]
+  );
 
-  const timeLeftThisWeek = timeLeft(weeklyHours);
+  const timeLeftThisWeek = timeLeft(weeklyHours, timeWorked);
 
   // If the day is over we return the default start time for the next morning.
   const daysLeftThisWeek = startAndEndTime?.length >= 2 ? 5 - today : 6 - today;
@@ -35,26 +41,18 @@ function run() {
   }
 
   // We have the day of the week at the top and use it to get the div with todays time.
-  const startTimeInFloat = todayHrAndMin(startAndEndTime);
+  const startTimeInFloat = startTime(startAndEndTime, defaultStart);
 
   // ---------------------------------------------------------------------------
 
   // Get break time in an Array and calculate the break
-  var breakDuration = 1;
+  var breakDuration = 0;
 
   var breakArray = document
     .querySelectorAll(".rest.text-middle")
-    [today - 1]?.innerText.match(/\d\d.\d\d/g)
+    [today - 1]?.innerText.match(/\d\d.\d\d/g);
 
-  if (breakArray != null && breakArray.length > 2) {
-    var breakArray = [breakArray.slice(0, 2), breakArray.slice(2)];
-
-    breakArray.forEach((ele) => {
-      calculateBreak(ele);
-    });
-
-    console.log("breakDureation", breakDuration);
-  }
+  calculateBreak(breakArray, breakDuration);
 
   // Calculate the end time and put times into div
 
@@ -82,73 +80,95 @@ function run() {
       .getElementById("btn_cal_check_show_summary_mode")
       .insertAdjacentElement("afterend", newDiv);
   }
+}
 
-  // Helper Functions ----------------------------------------------------------
+// Helper Functions ----------------------------------------------------------
 
-  //Works out time remaining for the week. Returns a float
-  function timeLeft(weeklyHours) {
-    const timeWorked = parseFloat(
-      document.querySelector("span.data").innerText.match(/.\d.\d\d/)[0]
-    );
-    return (weeklyHours - timeWorked).toFixed(2);
+//Works out time remaining for the week. Returns a float
+function timeLeft(weeklyHours, timeWorked) {
+  const calculatedTime = weeklyHours - timeWorked.toFixed(2);
+  if (calculatedTime < 0) {
+    return "0.00";
   }
 
-  function todayHrAndMin(startAndEndTime) {
-    // If the day is over we return the default start time for the next morning
+  return (weeklyHours - timeWorked).toFixed(2);
+}
 
-    if (startAndEndTime == undefined || startAndEndTime?.length >= 2) {
-      console.log(
-        "todayHrAndMin fn: No time found or present day over. Returning default start time"
+function startTime(startAndEndTime, defaultStart) {
+  // If day hasn't started or day is over we return the default start time.
+  if (startAndEndTime == undefined) {
+    return defaultStart;
+  }
+
+  // We then get the start time of today.
+  let start = startAndEndTime[0].split(":");
+
+  return start
+    ? parseFloat(start[0]) + parseFloat(start[1] / 60)
+    : defaultStart;
+}
+
+function calculateBreak(breakArray, breakDuration) {
+  if (breakArray != null && breakArray.length % 2 === 0) {
+    var breakArray = [breakArray.slice(0, 2), breakArray.slice(2)];
+
+    breakArray.forEach((time) => {
+      if (time.length === 0) {
+        return;
+      }
+
+      var todayBreakStart = time[0].split(":");
+      var startBreakStartInFloat =
+        parseFloat(todayBreakStart[0]) + parseFloat(todayBreakStart[1] / 60);
+
+      var todayBreakEnd = time[1].split(":");
+      var startBreakEndInFloat =
+        parseFloat(todayBreakEnd[0]) + parseFloat(todayBreakEnd[1] / 60);
+
+      breakDuration += parseFloat(
+        (startBreakEndInFloat - startBreakStartInFloat).toFixed(2)
       );
-      return defaultStart;
-    }
+    });
+    return breakDuration;
+  } else {
+    return (breakDuration = 1);
+  }
+}
 
-    // We then get the time worked today and subtract it from the 8 hours we work a day plus a 1 hour lunch break.
-    let start = startAndEndTime[0].split(":");
-
-    return start
-      ? parseFloat(start[0]) + parseFloat(start[1] / 60)
-      : defaultStart;
+function endTime(
+  weeklyHoursDividedByDays,
+  breakDuration,
+  startTimeInFloat,
+  startAndEndTime
+) {
+  if (startAndEndTime?.length > 2) {
+    return "I can't work out when clocking in twice 🙇‍♂️";
   }
 
-  function calculateBreak(time) {
-    var todayBreakStart = time[0].split(":");
-    var startBreakStartInFloat =
-      parseFloat(todayBreakStart[0]) + parseFloat(todayBreakStart[1] / 60);
-
-    var todayBreakEnd = time[1].split(":");
-    var startBreakEndInFloat =
-      parseFloat(todayBreakEnd[0]) + parseFloat(todayBreakEnd[1] / 60);
-
-    breakDuration += parseFloat(
-      (startBreakEndInFloat - startBreakStartInFloat).toFixed(2)
-    );
+  if (startAndEndTime?.length == 2) {
+    return "Have a Nice Evening 🦉";
   }
 
-  function endTime(weeklyHoursDividedByDays, breakDuration, startTimeInFloat) {
-    if (weeklyHoursDividedByDays <= 0) {
-      return "Have a Nice Weekend 🚀";
-    }
-
-    var endTimeInFloat =
-      weeklyHoursDividedByDays + breakDuration + startTimeInFloat;
-
-    var endTimeInArray = endTimeInFloat.toFixed(2).split(".");
-    console.log("🚀 ~ file: index.js:137 ~ endTime ~ endTimeInArray:", endTimeInArray)
-
-    return typeof endTimeInArray === "string"
-      ? "Day Off 🚀"
-      : `Ending Time: ${endTimeInArray[0]}:${singleDigits(
-          Math.round(endTimeInArray[1] * 0.6)
-        )}`;
+  if (weeklyHoursDividedByDays <= 0) {
+    return "Have a Nice Weekend 🚀";
   }
 
-  function singleDigits(params) {
-    if (params < 10) {
-      return "0" + params;
-    }
-    return params;
+  var endTimeInFloat =
+    weeklyHoursDividedByDays + breakDuration + startTimeInFloat;
+
+  var endTimeInArray = endTimeInFloat.toFixed(2).split(".");
+
+  return `Ending Time: ${endTimeInArray[0]}:${singleDigits(
+    Math.round(endTimeInArray[1] * 0.6)
+  )}`;
+}
+
+function singleDigits(params) {
+  console.log(params);
+  if (params < 10) {
+    return "0" + params;
   }
+  return params;
 }
 
 // -----------------------------------------------------------------------------
@@ -180,3 +200,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
   }
 });
+
+// uncomment the following line to use Jest testing
+
+// module.exports = {
+//   timeLeft: timeLeft,
+//   startTime: startTime,
+//   calculateBreak: calculateBreak,
+//   endTime: endTime,
+//   singleDigits: singleDigits,
+// };

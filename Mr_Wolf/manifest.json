@@ -3,7 +3,7 @@
   "name": "What time is it Mr.Wolf?",
   "description": "What time is it Mr.Wolf?",
   "author": "Gazwai",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "permissions": [
     "storage"
   ],

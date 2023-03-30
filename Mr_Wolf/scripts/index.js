@@ -26,16 +26,20 @@ function run() {
   const daysLeftThisWeek =
     startAndEndTime?.length % 2 === 0 ? 5 - today : 6 - today;
 
-  var weeklyHoursDividedByDays = timeLeftThisWeek / daysLeftThisWeek;
+var weeklyHoursDividedByDays = timeLeftThisWeek / daysLeftThisWeek;
 
-  // At the start of the week the time is 0 so 40 /0 = infinity. This fixes that.
-  if (weeklyHoursDividedByDays == Infinity) {
-    var weeklyHoursDividedByDays = weeklyHours / 5;
-  }
+// At the start of the week the time is 0 so 40 /0 = infinity. This fixes that.
+if (weeklyHoursDividedByDays == Infinity) {
+  weeklyHoursDividedByDays = weeklyHours / 5;
+}
 
-  if (weeklyHoursDividedByDays == -Infinity || NaN) {
-    var weeklyHoursDividedByDays = 0;
-  }
+if (weeklyHoursDividedByDays == -Infinity || isNaN(weeklyHoursDividedByDays)) {
+  weeklyHoursDividedByDays = 0;
+}
+
+if (!weeklyHoursDividedByDays) {
+  weeklyHoursDividedByDays = 0;
+}
 
   // We have the day of the week at the top and use it to get the div with todays time.
   const startTimeInFloat = startTime(startAndEndTime, defaultStart);

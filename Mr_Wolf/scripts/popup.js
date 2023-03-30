@@ -44,3 +44,15 @@ window.onload = () => {
     chrome.runtime.sendMessage({ hours, start, action: "default_values" });
   }
 };
+
+document.getElementById("submit").addEventListener("click", function () {
+  const spinner = document.getElementById("spinner");
+  const submit = document.getElementById("submit");
+  submit.style.display = "none";
+  spinner.style.display = "inline-block";
+
+  setTimeout(() => {
+    spinner.style.display = "none";
+    submit.style.display = "inline-block";
+  }, 1500); // Set the duration for which the spinner will be displayed (e.g., 1 seconds)
+});

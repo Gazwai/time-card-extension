@@ -6,7 +6,20 @@ window.onload = () => {
 };
 
 function run() {
-  if (document.querySelector(".week.cf.show_shift") == undefined) {
+  if (document.querySelectorAll(".week.cf.show_shift").length !== 1) {
+    if (document.getElementById("mr-wolf-summary")) {
+      document.getElementById("mr-wolf-summary").innerHTML =
+        "Change to shift view to view summary";
+    } else {
+      const newDiv = document.createElement("span");
+      newDiv.innerHTML = "Change to shift view to view summary";
+      newDiv.style.margin = "1rem";
+      newDiv.setAttribute("id", "mr-wolf-summary");
+
+      document
+        .getElementById("btn_cal_check_show_summary_mode")
+        .insertAdjacentElement("afterend", newDiv);
+    }
     return console.log("Change to shift view");
   }
 
@@ -27,7 +40,8 @@ function run() {
   const timeLeftThisWeek = timeLeft(weeklyHours, timeWorked);
 
   // If the day is over we return the default start time for the next morning.
-  const daysLeftThisWeek = startAndEndTime?.length >= 2 ? 5 - today : 6 - today;
+  const daysLeftThisWeek =
+    startAndEndTime?.length % 2 === 0 ? 5 - today : 6 - today;
 
   var weeklyHoursDividedByDays = timeLeftThisWeek / daysLeftThisWeek;
 
@@ -46,25 +60,39 @@ function run() {
   // ---------------------------------------------------------------------------
 
   // Get break time in an Array and calculate the break
-  var breakDuration = 0;
+  var breakDuration = 1;
 
-  var breakArray = document
-    .querySelectorAll(".rest.text-middle")
-    [today - 1]?.innerText.match(/\d\d.\d\d/g);
+  var breakArray = Array.from(
+    document
+      .querySelectorAll(".cal_table_detail")
+      [today].querySelectorAll(".rest.text-middle")
+  )
+    .flatMap((e) => e.innerText.match(/\d\d.\d\d/g) || [])
+    .filter((e) => e !== null);
 
-  calculateBreak(breakArray, breakDuration);
+
+  breakDuration = calculateBreak(breakArray);
 
   // Calculate the end time and put times into div
-
   var endTimeInString = endTime(
     weeklyHoursDividedByDays,
     breakDuration,
     startTimeInFloat
   );
 
-  if (document.getElementById("mr-worlf-summary")) {
+  insertDisplay(timeLeftThisWeek, weeklyHoursDividedByDays, endTimeInString);
+}
+
+// Helper Functions ----------------------------------------------------------
+
+function insertDisplay(
+  timeLeftThisWeek,
+  weeklyHoursDividedByDays,
+  endTimeInString
+) {
+  if (document.getElementById("mr-wolf-summary")) {
     document.getElementById(
-      "mr-worlf-summary"
+      "mr-wolf-summary"
     ).innerHTML = `Hours left: ${timeLeftThisWeek}/${weeklyHoursDividedByDays.toFixed(
       2
     )} : ${endTimeInString}`;
@@ -74,15 +102,13 @@ function run() {
       2
     )} : ${endTimeInString}`;
     newDiv.style.margin = "1rem";
-    newDiv.setAttribute("id", "mr-worlf-summary");
+    newDiv.setAttribute("id", "mr-wolf-summary");
 
     document
       .getElementById("btn_cal_check_show_summary_mode")
       .insertAdjacentElement("afterend", newDiv);
   }
 }
-
-// Helper Functions ----------------------------------------------------------
 
 //Works out time remaining for the week. Returns a float
 function timeLeft(weeklyHours, timeWorked) {
@@ -101,38 +127,45 @@ function startTime(startAndEndTime, defaultStart) {
   }
 
   // We then get the start time of today.
-  let start = startAndEndTime[0].split(":");
+  let start = startAndEndTime[0];
 
-  return start
-    ? parseFloat(start[0]) + parseFloat(start[1] / 60)
-    : defaultStart;
+  return isValidTime(start) ? timeToNumber(start) : defaultStart;
+
 }
 
-function calculateBreak(breakArray, breakDuration) {
-  if (breakArray != null && breakArray.length % 2 === 0) {
-    var breakArray = [breakArray.slice(0, 2), breakArray.slice(2)];
+function calculateBreak(breakArray) {
+  if (!breakArray || breakArray.length % 2 !== 0) return 1;
 
-    breakArray.forEach((time) => {
-      if (time.length === 0) {
-        return;
-      }
+  const breaks = [];
+  for (let i = 0; i < breakArray.length; i += 2) {
+    const startBreak = breakArray[i];
+    const endBreak = breakArray[i + 1];
 
-      var todayBreakStart = time[0].split(":");
-      var startBreakStartInFloat =
-        parseFloat(todayBreakStart[0]) + parseFloat(todayBreakStart[1] / 60);
-
-      var todayBreakEnd = time[1].split(":");
-      var startBreakEndInFloat =
-        parseFloat(todayBreakEnd[0]) + parseFloat(todayBreakEnd[1] / 60);
-
-      breakDuration += parseFloat(
-        (startBreakEndInFloat - startBreakStartInFloat).toFixed(2)
-      );
-    });
-    return breakDuration;
-  } else {
-    return (breakDuration = 1);
+    if (isValidTime(startBreak) && isValidTime(endBreak)) {
+      const start = timeToNumber(startBreak);
+      const end = timeToNumber(endBreak);
+      breaks.push(end - start);
+    }
   }
+
+  return breaks.length > 0 ? breaks.reduce((a, b) => a + b) : 1;
+}
+
+function isValidTime(timeStr) {
+  const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/;
+  return timeRegex.test(timeStr);
+}
+
+function timeToNumber(time) {
+  const [hours, minutes] = time.split(":");
+  return parseInt(hours, 10) + parseInt(minutes, 10) / 60;
+}
+
+function timeToString(time) {
+  const hours = Math.floor(time);
+  const minutes = Math.round((time - hours) * 60);
+
+  return `${hours}:${singleDigits(minutes)}`;
 }
 
 function endTime(
@@ -156,15 +189,13 @@ function endTime(
   var endTimeInFloat =
     weeklyHoursDividedByDays + breakDuration + startTimeInFloat;
 
-  var endTimeInArray = endTimeInFloat.toFixed(2).split(".");
+  var endTimeInString = timeToString(endTimeInFloat);
 
-  return `Ending Time: ${endTimeInArray[0]}:${singleDigits(
-    Math.round(endTimeInArray[1] * 0.6)
-  )}`;
+  return `Ending Time: ${endTimeInString}`;
 }
 
+
 function singleDigits(params) {
-  console.log(params);
   if (params < 10) {
     return "0" + params;
   }

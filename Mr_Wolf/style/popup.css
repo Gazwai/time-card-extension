@@ -36,6 +36,10 @@ a {
   justify-content: flex-start;
 }
 
+.page-frame-body-container {
+  height: 131px;
+}
+
 .page-frame-header {
   display: flex;
   background-color: #95c9b4;
@@ -45,7 +49,7 @@ a {
   gap: 1rem;
   justify-content: center;
   align-items: center;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .page-frame-header img {
@@ -91,7 +95,7 @@ form input {
   width: 4rem;
   margin-bottom: 0;
   height: 1.5rem;
-  color: #FFFFFF;
+  color: #ffffff;
   border: none;
   background-color: #95c9b4;
   border-radius: 4px;

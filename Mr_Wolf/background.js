@@ -30,7 +30,6 @@ function setDefaultValues(request, sender, sendResponse) {
   if (request.action === "default_values") {
     const { hours, start } = request;
     chrome.storage.sync.set({ hours, start }, () => {
-      console.log("Setting values");
     });
     return true;
   }
@@ -46,7 +45,6 @@ function setDefaultValues(request, sender, sendResponse) {
  */
 function sendDefaultValuesIfOnSmaregi(request, sender, sendResponse) {
   if (request.action === "on_smaregi") {
-    console.log("Connected");
     sendDefaultValues();
     return true;
   }
@@ -71,6 +69,5 @@ function sendDefaultValues() {
         });
       }
     });
-    console.log("Getting values");
   });
 }

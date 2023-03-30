@@ -6,23 +6,6 @@ window.onload = () => {
 };
 
 function run() {
-  if (document.querySelectorAll(".week.cf.show_shift").length !== 1) {
-    if (document.getElementById("mr-wolf-summary")) {
-      document.getElementById("mr-wolf-summary").innerHTML =
-        "Change to shift view to view summary";
-    } else {
-      const newDiv = document.createElement("span");
-      newDiv.innerHTML = "Change to shift view to view summary";
-      newDiv.style.margin = "1rem";
-      newDiv.setAttribute("id", "mr-wolf-summary");
-
-      document
-        .getElementById("btn_cal_check_show_summary_mode")
-        .insertAdjacentElement("afterend", newDiv);
-    }
-    return console.log("Change to shift view");
-  }
-
   const today = new Date().getDay();
 
   const weeklyHours = parseInt(window.localStorage.getItem("hours")) || 40;
@@ -69,7 +52,6 @@ function run() {
   )
     .flatMap((e) => e.innerText.match(/\d\d.\d\d/g) || [])
     .filter((e) => e !== null);
-
 
   breakDuration = calculateBreak(breakArray);
 
@@ -130,7 +112,6 @@ function startTime(startAndEndTime, defaultStart) {
   let start = startAndEndTime[0];
 
   return isValidTime(start) ? timeToNumber(start) : defaultStart;
-
 }
 
 function calculateBreak(breakArray) {
@@ -194,7 +175,6 @@ function endTime(
   return `Ending Time: ${endTimeInString}`;
 }
 
-
 function singleDigits(params) {
   if (params < 10) {
     return "0" + params;
@@ -207,6 +187,24 @@ function singleDigits(params) {
 // Checks if the user is on smaregi timecard and sends a message to background.js to run sendDefaultValues()
 const check_url = setInterval(function () {
   if (window.location.href.includes("timecard1.smaregi.jp/staffs/dashboard")) {
+
+    if (document.querySelectorAll(".week.cf.show_shift").length !== 1) {
+      if (document.getElementById("mr-wolf-summary")) {
+        document.getElementById("mr-wolf-summary").innerHTML =
+          "Change to shift view to view summary";
+      } else {
+        const newDiv = document.createElement("span");
+        newDiv.innerHTML = "Change to shift view to view summary";
+        newDiv.style.margin = "1rem";
+        newDiv.setAttribute("id", "mr-wolf-summary");
+
+        document
+          .getElementById("btn_cal_check_show_summary_mode")
+          .insertAdjacentElement("afterend", newDiv);
+      }
+      return;
+    }
+
     chrome.runtime.sendMessage({
       action: "on_smaregi",
     });

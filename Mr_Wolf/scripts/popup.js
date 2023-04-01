@@ -40,8 +40,14 @@ window.onload = () => {
   function sendValuesToBackground() {
     const hours = localStorage.getItem("hours");
     const start = localStorage.getItem("start");
+    const clicked = Date.now();
     // Send message to the background service worker with default values and action type
-    chrome.runtime.sendMessage({ hours, start, action: "default_values" });
+    chrome.runtime.sendMessage({
+      hours,
+      start,
+      clicked,
+      action: "default_values",
+    });
   }
 };
 
@@ -54,5 +60,6 @@ document.getElementById("submit").addEventListener("click", function () {
   setTimeout(() => {
     spinner.style.display = "none";
     submit.style.display = "inline-block";
-  }, 1500); // Set the duration for which the spinner will be displayed (e.g., 1 seconds)
+    window.close();
+  }, 1000); // Set the duration for which the spinner will be displayed (e.g., 1 seconds)
 });

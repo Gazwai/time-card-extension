@@ -19,23 +19,23 @@ const {
  */
 describe("timeLeft", () => {
   test("Beginning of the week: 40hrs - 0hr", () => {
-    expect(timeLeft(40, 0)).toBe("40.00");
+    expect(timeLeft(40, 0)).toBe(40);
   });
 
   test("End of the week: 40hrs - 40hr", () => {
-    expect(timeLeft(40, 40)).toBe("0.00");
+    expect(timeLeft(40, 40)).toBe(0);
   });
 
   test("Overtime: 40hrs - 41hr", () => {
-    expect(timeLeft(40, 41)).toBe("0.00");
+    expect(timeLeft(40, 41)).toBe(0);
   });
 
   test("Custom weekly hours: 35hrs - 0hr", () => {
-    expect(timeLeft(35, 0)).toBe("35.00");
+    expect(timeLeft(35, 0)).toBe(35);
   });
 
   test("Custom weekly hours: 45hrs - 45hr", () => {
-    expect(timeLeft(45, 45)).toBe("0.00");
+    expect(timeLeft(45, 45)).toBe(0);
   });
 });
 
@@ -118,7 +118,7 @@ describe("calculateBreak", () => {
  */
 describe("endTime", () => {
   test("Still at work: endTime, weeklyhr-break-start-time", () => {
-    expect(endTime(8, 1, 8, ["08:00"])).toBe("Ending Time: 17:00");
+    expect(endTime(8, 1, 8, ["08:00"])).toBe("17:00");
   });
 
   test("Finished Work", () => {

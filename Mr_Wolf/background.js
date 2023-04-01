@@ -28,8 +28,8 @@ chrome.runtime.onMessage.addListener(sendDefaultValuesIfOnSmaregi);
  */
 function setDefaultValues(request, sender, sendResponse) {
   if (request.action === "default_values") {
-    const { hours, start } = request;
-    chrome.storage.sync.set({ hours, start }, () => {
+    const { hours, start, clicked } = request;
+    chrome.storage.sync.set({ hours, start, clicked }, () => {
     });
     return true;
   }
@@ -55,7 +55,7 @@ function sendDefaultValuesIfOnSmaregi(request, sender, sendResponse) {
  * @function
  */
 function sendDefaultValues() {
-  chrome.storage.sync.get(["hours", "start"], ({ hours, start }) => {
+  chrome.storage.sync.get(["hours", "start", "clicked"], ({ hours, start, clicked}) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs.find((tab) =>
         tab.url?.match("https://timecard1.smaregi.jp/staffs/dashboard/*")
@@ -65,6 +65,7 @@ function sendDefaultValues() {
         chrome.tabs.sendMessage(id, {
           hours,
           start,
+          clicked,
           action: "back_default_values",
         });
       }

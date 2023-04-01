@@ -301,7 +301,6 @@ function singleDigits(params) {
 // Checks if the user is on smaregi timecard and sends a message to background.js to run sendDefaultValues()
 const check_url = setInterval(function () {
   if (window.location.href.includes("timecard1.smaregi.jp/staffs/dashboard")) {
-
     if (document.querySelectorAll(".week.cf.show_shift").length !== 1) {
       if (document.getElementById("mr-wolf-summary")) {
         document.getElementById("mr-wolf-summary").innerHTML =
@@ -354,7 +353,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 // define the callback function to be executed when changes are detected
 const observerCallback = function (mutationsList) {
   for (const mutation of mutationsList) {
-    if (mutation.type === "childList" || mutation.target.classList.contains("week")) {
+    if (
+      mutation.type === "childList" ||
+      mutation.target.classList.contains("week")
+    ) {
       run();
       break;
     }

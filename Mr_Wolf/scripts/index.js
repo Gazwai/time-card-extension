@@ -86,7 +86,7 @@ function run() {
   debug("breakDuration", breakDuration);
 
   let breakDurationString = "";
-  if (breakDuration != 1) {
+  if (breakArray.length !== 0) {
     breakDurationString = `: <strong>Break:</strong> ${numberToTime(
       breakDuration
     )}`;

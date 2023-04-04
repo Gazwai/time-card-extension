@@ -131,7 +131,7 @@ describe("endTime", () => {
 
   test("When clocked in twice in one day", () => {
     expect(endTime(8, 1, 9, ["08:00", "17:00", "18:00"])).toBe(
-      "I can't work out when clocking in twice 🙇‍♂️"
+      "🙇‍♂️"
     );
   });
 

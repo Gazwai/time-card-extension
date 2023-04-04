@@ -3,9 +3,7 @@
 const testing = false;
 
 function debug(name, value) {
-  if (testing) {
-    return console.log(`${name}: `, value);
-  }
+  testing ? console.log(`${name}: `, value) : null;
 }
 
 window.onload = () => {
@@ -22,8 +20,9 @@ function run() {
   const defaultStart = parseInt(window.localStorage.getItem("start")) || 8;
 
   const startAndEndTime = document
-    .querySelectorAll("div.cal_day div.inner")
-    [today]?.innerText.match(/\d\d.\d\d/gi);
+    .querySelectorAll(".cal_table_detail")
+    [today]?.querySelector(".total.text-middle")
+    .innerText.match(/\d\d.\d\d/gi);
   debug("startAndEndTime", startAndEndTime);
 
   const timeWorked = parseFloat(
@@ -31,11 +30,13 @@ function run() {
   );
   debug("timeWorked", timeWorked);
 
-  const daysWorking = Array.from(
-    document.querySelectorAll(".daily_summary")
-  ).filter((e) => /\d+\.\d{2}/.test(e.innerText)).length;
+  const daysWorking = Array.from(document.querySelectorAll(".daily_summary"))
+    .splice(1, 5)
+    .filter((e) => /\d+\.\d{2}/.test(e.innerText)).length;
 
-  const daysLeftThisWeek = 5 - daysWorking < 0 ? 0 : 5 - daysWorking;
+  // If the day is over we return the default start time for the next morning.
+  const daysLeftThisWeek =
+    startAndEndTime?.length % 2 === 0 ? 5 - daysWorking : 6 - daysWorking;
   debug("daysLeftThisWeek", daysLeftThisWeek);
 
   const timeLeftThisWeek = timeLeft(weeklyHours, timeWorked);
@@ -87,7 +88,7 @@ function run() {
 
   let breakDurationString = "";
   if (breakArray.length !== 0) {
-    breakDurationString = `: <strong>Break:</strong> ${numberToTime(
+    breakDurationString = `: <strong>Break: </strong> ${numberToTime(
       breakDuration
     )}`;
   }
@@ -127,14 +128,14 @@ function insertDisplay(
   if (document.getElementById("mr-wolf-summary")) {
     document.getElementById(
       "mr-wolf-summary"
-    ).innerHTML = `<strong>Hours left:</strong> ${numberToTime(
+    ).innerHTML = `<strong>Hours left: </strong> ${numberToTime(
       timeLeftThisWeek
     )}/${numberToTime(
       weeklyHoursDividedByDays
     )} : <strong>Ending Time: </strong>${endTimeInString} ${breakDurationString}`;
   } else {
     const newSpan = document.createElement("span");
-    newSpan.innerHTML = `<strong>Hours left:</strong> ${numberToTime(
+    newSpan.innerHTML = `<strong>Hours left: </strong> ${numberToTime(
       timeLeftThisWeek
     )}/${numberToTime(
       weeklyHoursDividedByDays
@@ -143,7 +144,7 @@ function insertDisplay(
     newSpan.setAttribute("id", "mr-wolf-summary");
 
     const newStyle = document.createElement("style");
-    newStyle.innerHTML = `@media screen and (max-width: 675px) {
+    newStyle.innerHTML = `@media screen and (max-width: 768px) {
       #mr-wolf-summary {
           display: block;
           margin: 1rem 0 0 0 !important;
@@ -198,9 +199,15 @@ function startTime(startAndEndTime, defaultStart) {
  * @returns {number} - the total break duration for the day
  */
 function calculateBreak(breakArray) {
-  if (!breakArray || breakArray.length % 2 !== 0) return 1;
+  if (!breakArray || breakArray.length === 0) return 1;
+
+  // Discard last value if array has odd number of values
+  if (breakArray.length % 2 === 1) {
+    breakArray.pop();
+  }
 
   const breaks = [];
+
   for (let i = 0; i < breakArray.length; i += 2) {
     const startBreak = breakArray[i];
     const endBreak = breakArray[i + 1];
@@ -261,27 +268,25 @@ function endTime(
   breakDuration,
   startTimeInFloat,
   startAndEndTime,
-  daysLeftThisWeek
+  today
 ) {
-  if (startAndEndTime?.length > 2) {
-    return "I can't work out when clocking in twice 🙇‍♂️";
+  if (weeklyHoursDividedByDays <= 0 || today == 0 || today == 6) {
+    breakDuration = "";
+    return "Have a Nice Weekend 🚀";
   }
 
-  if (startAndEndTime?.length == 2) {
+  if (startAndEndTime?.length % 2 == 0) {
     return "Have a Nice Evening 🦉";
   }
 
-  if (weeklyHoursDividedByDays <= 0 || daysLeftThisWeek == 0) {
-    breakDuration = "";
-    return "Have a Nice Weekend 🚀";
+  if (startAndEndTime?.length > 2) {
+    return "🙇‍♂️";
   }
 
   var endTimeInFloat =
     weeklyHoursDividedByDays + breakDuration + startTimeInFloat;
 
-  var endTimeInString = numberToTime(endTimeInFloat);
-
-  return endTimeInString;
+  return numberToTime(endTimeInFloat);
 }
 
 /**

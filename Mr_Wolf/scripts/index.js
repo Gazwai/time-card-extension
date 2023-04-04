@@ -21,8 +21,8 @@ function run() {
 
   const startAndEndTime = document
     .querySelectorAll(".cal_table_detail")
-    [today]?.querySelector(".total.text-middle")
-    .innerText.match(/\d\d.\d\d/gi);
+    [today].querySelector(".total.text-middle")
+    ?.innerText.match(/\d\d.\d\d/gi);
   debug("startAndEndTime", startAndEndTime);
 
   const timeWorked = parseFloat(
@@ -30,13 +30,16 @@ function run() {
   );
   debug("timeWorked", timeWorked);
 
-  const daysWorking = Array.from(document.querySelectorAll(".daily_summary"))
+  const daysWorking = Array.from(
+    document.querySelectorAll("div.cal_day div.inner")
+  )
     .splice(1, 5)
-    .filter((e) => /\d+\.\d{2}/.test(e.innerText)).length;
+    .filter((e) => /\d\d.\d\d/gi.test(e.innerText)).length;
 
-  // If the day is over we return the default start time for the next morning.
   const daysLeftThisWeek =
-    startAndEndTime?.length % 2 === 0 ? 5 - daysWorking : 6 - daysWorking;
+    startAndEndTime?.length % 2 === 0 || !startAndEndTime
+      ? 5 - daysWorking
+      : 6 - daysWorking;
   debug("daysLeftThisWeek", daysLeftThisWeek);
 
   const timeLeftThisWeek = timeLeft(weeklyHours, timeWorked);

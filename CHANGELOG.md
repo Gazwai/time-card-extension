@@ -1,6 +1,9 @@
 # Changelog
 
 ## 0.2.7 (2023-04-04)
+- 🐞 Handling querySelector bug fix
+
+## 0.2.7 (2023-04-04)
 - 🛠️ More accurate selection of days worked and start and end times
 - 🎨 Changed day finish message and media query width
 ## 0.2.6 (2023-04-01)

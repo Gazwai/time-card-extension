@@ -34,7 +34,7 @@ function run() {
     document.querySelectorAll("div.cal_day div.inner")
   )
     .splice(1, 5)
-    .filter((e) => /\d\d.\d\d/gi.test(e.innerText)).length;
+    .filter((e) => e.children.length > 2).length;
 
   const daysLeftThisWeek =
     startAndEndTime?.length % 2 === 0 || !startAndEndTime

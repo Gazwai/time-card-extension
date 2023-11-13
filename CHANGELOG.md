@@ -1,6 +1,9 @@
 # Changelog
 
-## 0.2.7 (2023-04-04)
+## 0.2.9 (2023-11-14)
+- 🐞 Fix for number of days worked
+
+## 0.2.8 (2023-04-04)
 - 🐞 Handling querySelector bug fix
 
 ## 0.2.7 (2023-04-04)
